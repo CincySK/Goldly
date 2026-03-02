@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum MetalType {
+  GOLD
+  SILVER
+}
+
+enum ItemType {
+  BAR
+  COIN
+}
+
+enum ListingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SOLD
+}
+
+enum ReportType {
+  USER
+  LISTING
+  CHAT
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  name               String
+  email              String    @unique
+  passwordHash       String
+  role               Role      @default(USER)
+  verificationStatus VerificationStatus @default(UNVERIFIED)
+  suspended          Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  listings           Listing[]
+  kycSubmissions     KYCSubmission[]
+  sentMessages       ChatMessage[] @relation("sentMessages")
+  refreshTokens      RefreshToken[]
+  notifications      Notification[]
+  reviewsGiven       Review[] @relation("reviewsGiven")
+  reviewsReceived    Review[] @relation("reviewsReceived")
+  reportsFiled       Report[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model KYCSubmission {
+  id              String    @id @default(uuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idFrontUrl       String
+  idBackUrl        String
+  selfieUrl        String
+  status           VerificationStatus @default(PENDING)
+  reviewReason     String?
+  reviewedByAdminId String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Listing {
+  id                 String   @id @default(uuid())
+  sellerId           String
+  seller             User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  title              String
+  description        String
+  metalType          MetalType
+  itemType           ItemType
+  mint               String
+  weight             Float
+  weightUnit         String
+  askingPrice        Float
+  currency           String
+  spotPriceAtListing Float
+  status             ListingStatus @default(PENDING)
+  rejectionReason    String?
+  certificateUrl     String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  photos             ListingPhoto[]
+  conversations      Conversation[]
+  reviews            Review[]
+  reports            Report[]
+}
+
+model ListingPhoto {
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  url       String
+}
+
+model Conversation {
+  id         String   @id @default(uuid())
+  listingId  String
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyerId    String
+  buyer      User     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  sellerId   String
+  seller     User     @relation("ConversationSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  messages   ChatMessage[]
+}
+
+model ChatMessage {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User     @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  content        String
+  attachmentUrl  String?
+  attachmentType String?
+  createdAt      DateTime @default(now())
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  listingId  String
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reviewerId String
+  reviewer   User     @relation("reviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+  revieweeId String
+  reviewee   User     @relation("reviewsReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
+  rating     Int
+  text       String
+  createdAt  DateTime @default(now())
+
+  @@unique([listingId, reviewerId])
+}
+
+model Report {
+  id             String   @id @default(uuid())
+  reporterId      String
+  reporter        User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  type            ReportType
+  targetUserId    String?
+  targetListingId String?
+  targetChatId    String?
+  reason          String
+  resolved        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
