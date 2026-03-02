@@ -24,13 +24,42 @@ Goldly is a second-hand precious metals marketplace for gold/silver bars and coi
 - npm 10+
 - Docker + Docker Compose
 
-## Quick Start
+## IMPORTANT: Run commands from the repo root
+
+Your errors indicate commands were run from `C:\Users\deept` instead of the cloned project folder.
+
+### Correct sequence on Windows (PowerShell or CMD)
+
+```bat
+cd C:\path\to\Goldly
+npm install
+copy server\.env.example server\.env
+npm run infra:up
+npm run prisma:migrate -w @goldly/server
+npm run prisma:seed -w @goldly/server
+npm run dev -w @goldly/server
+```
+
+In a second terminal:
+
+```bat
+cd C:\path\to\Goldly
+npm run dev -w @goldly/web
+```
+
+In a third terminal:
+
+```bat
+cd C:\path\to\Goldly
+npm run dev -w @goldly/admin
+```
+
+## Quick Start (cross-platform)
 
 ```bash
 cp server/.env.example server/.env
 npm install
-cd infra && docker compose up -d
-cd ..
+npm run infra:up
 npm run prisma:migrate -w @goldly/server
 npm run prisma:seed -w @goldly/server
 npm run dev -w @goldly/server
@@ -39,11 +68,47 @@ npm run dev -w @goldly/admin
 npm run dev -w @goldly/mobile
 ```
 
+## One-command bootstrap
+
+```bash
+npm run bootstrap
+```
+
+This starts infra and applies/seeds DB.
+
 ## Testing
 
 ```bash
 npm run test -w @goldly/server
 ```
+
+## Common Troubleshooting
+
+### 1) `ENOENT ... C:\Users\<you>\package.json`
+You are not in the project directory.
+
+Fix:
+
+```bat
+cd C:\path\to\Goldly
+npm install
+```
+
+### 2) `cd infra && docker compose up -d` path not found
+Same root cause: wrong current directory.
+
+Fix:
+
+```bat
+cd C:\path\to\Goldly
+npm run infra:up
+```
+
+### 3) Docker command not found
+Install Docker Desktop and ensure `docker` is in PATH.
+
+### 4) Port already in use
+Stop local services using ports `5432`, `9000`, `9001` or edit `infra/docker-compose.yml`.
 
 ## Security / Validation
 
@@ -73,4 +138,3 @@ npm run test -w @goldly/server
 - `/api/reviews` create listing reviews
 - `/api/notifications` in-app notifications feed
 - `/api/admin/*` approvals, reports, moderation, audit
-

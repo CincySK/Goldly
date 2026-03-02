@@ -9,6 +9,9 @@
   ],
   "scripts": {
     "build": "npm run build -w @goldly/shared && npm run build -w @goldly/server && npm run build -w @goldly/web && npm run build -w @goldly/admin && npm run build -w @goldly/mobile",
-    "test": "npm run test -w @goldly/server"
+    "test": "npm run test -w @goldly/server",
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down",
+    "bootstrap": "npm run infra:up && npm run prisma:migrate -w @goldly/server && npm run prisma:seed -w @goldly/server"
   }
 }
