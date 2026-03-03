@@ -26,6 +26,24 @@ Goldly is a second-hand precious metals marketplace for gold/silver bars and coi
 
 ## IMPORTANT: Run commands from the repo root
 
+## Sync your local branch with GitHub first
+
+If you still see Prisma relation errors that don't match this README, your local branch is likely behind.
+
+```bat
+git fetch origin
+git checkout Goldly
+git pull --rebase origin Goldly
+```
+
+Then verify the latest commit and clean generated artifacts:
+
+```bat
+git log --oneline -n 3
+del /q server\tests\*.js
+```
+
+
 Your errors indicate commands were run from `C:\Users\deept` instead of the cloned project folder.
 
 ### Correct sequence on Windows (PowerShell or CMD)
@@ -66,6 +84,15 @@ Then run:
 
 ```bat
 copy server\.env.example server\.env
+```
+
+### Recommended command order (after sync)
+
+```bat
+copy server\.env.example server\.env
+npm run prisma:generate -w @goldly/server
+npm run prisma:setup -w @goldly/server
+npm run prisma:seed -w @goldly/server
 ```
 
 ## Quick Start (cross-platform)
@@ -120,6 +147,8 @@ npm run infra:up
 
 ### 3) Docker command not found
 Install Docker Desktop and ensure `docker` is in PATH, then restart terminal and run `docker --version`.
+
+If Docker cannot be installed, use a hosted PostgreSQL and set `DATABASE_URL` manually in `server/.env` to continue backend-only testing.
 
 ### 4) Port already in use
 Stop local services using ports `5432`, `9000`, `9001` or edit `infra/docker-compose.yml`.
