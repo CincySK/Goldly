@@ -8,9 +8,10 @@
     "start": "node dist/index.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:setup": "npm run prisma:generate && npm run prisma:migrate",
-    "prisma:seed": "npm run prisma:generate && ts-node prisma/seed.ts",
-    "test": "vitest run"
+    "prisma:setup": "npm run setup:env && npm run prisma:generate && npm run prisma:migrate",
+    "prisma:seed": "npm run setup:env && npm run prisma:generate && ts-node prisma/seed.ts",
+    "test": "vitest run",
+    "setup:env": "node scripts/setup-env.js"
   },
   "dependencies": {
     "@goldly/shared": "0.1.0",

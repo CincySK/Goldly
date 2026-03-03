@@ -51,7 +51,7 @@ Your errors indicate commands were run from `C:\Users\deept` instead of the clon
 ```bat
 cd C:\path\to\Goldly
 npm install
-copy server\.env.example server\.env
+npm run setup:env -w @goldly/server
 npm run infra:up
 npm run prisma:setup -w @goldly/server
 npm run prisma:seed -w @goldly/server
@@ -73,7 +73,7 @@ npm run dev -w @goldly/admin
 ```
 
 
-### 0) If `copy server\.env.example server\.env` fails
+### 0) If `npm run setup:env -w @goldly/server` fails
 The file exists in current versions. If it is missing locally, update your branch first:
 
 ```bat
@@ -83,22 +83,32 @@ git pull
 Then run:
 
 ```bat
-copy server\.env.example server\.env
+npm run setup:env -w @goldly/server
 ```
 
 ### Recommended command order (after sync)
 
 ```bat
-copy server\.env.example server\.env
+npm run setup:env -w @goldly/server
 npm run prisma:generate -w @goldly/server
 npm run prisma:setup -w @goldly/server
 npm run prisma:seed -w @goldly/server
 ```
 
+
+### If `server/.env.example` is missing
+Use the setup script instead of manual copy. It will:
+1) copy from `server/.env.example` when present, or
+2) create `server/.env` with safe local defaults.
+
+```bat
+npm run setup:env -w @goldly/server
+```
+
 ## Quick Start (cross-platform)
 
 ```bash
-cp server/.env.example server/.env
+npm run setup:env -w @goldly/server
 npm install
 npm run infra:up
 npm run prisma:setup -w @goldly/server
