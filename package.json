@@ -12,6 +12,6 @@
     "test": "npm run test -w @goldly/server",
     "infra:up": "docker compose -f infra/docker-compose.yml up -d",
     "infra:down": "docker compose -f infra/docker-compose.yml down",
-    "bootstrap": "npm run infra:up && npm run prisma:migrate -w @goldly/server && npm run prisma:seed -w @goldly/server"
+    "bootstrap": "npm run infra:up && npm run prisma:setup -w @goldly/server && npm run prisma:seed -w @goldly/server"
   }
 }

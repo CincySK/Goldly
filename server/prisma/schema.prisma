@@ -43,24 +43,26 @@ enum ReportType {
 }
 
 model User {
-  id                 String    @id @default(uuid())
+  id                 String             @id @default(uuid())
   name               String
-  email              String    @unique
+  email              String             @unique
   passwordHash       String
-  role               Role      @default(USER)
+  role               Role               @default(USER)
   verificationStatus VerificationStatus @default(UNVERIFIED)
-  suspended          Boolean   @default(false)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  suspended          Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 
-  listings           Listing[]
-  kycSubmissions     KYCSubmission[]
-  sentMessages       ChatMessage[] @relation("sentMessages")
-  refreshTokens      RefreshToken[]
-  notifications      Notification[]
-  reviewsGiven       Review[] @relation("reviewsGiven")
-  reviewsReceived    Review[] @relation("reviewsReceived")
-  reportsFiled       Report[]
+  listings              Listing[]
+  kycSubmissions        KYCSubmission[]
+  sentMessages          ChatMessage[]   @relation("sentMessages")
+  refreshTokens         RefreshToken[]
+  notifications         Notification[]
+  reviewsGiven          Review[]        @relation("reviewsGiven")
+  reviewsReceived       Review[]        @relation("reviewsReceived")
+  reportsFiled          Report[]
+  conversationsAsBuyer  Conversation[]  @relation("ConversationBuyer")
+  conversationsAsSeller Conversation[]  @relation("ConversationSeller")
 }
 
 model RefreshToken {
@@ -73,23 +75,23 @@ model RefreshToken {
 }
 
 model KYCSubmission {
-  id              String    @id @default(uuid())
+  id               String             @id @default(uuid())
   userId           String
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   idFrontUrl       String
   idBackUrl        String
   selfieUrl        String
   status           VerificationStatus @default(PENDING)
   reviewReason     String?
   reviewedByAdminId String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }
 
 model Listing {
-  id                 String   @id @default(uuid())
+  id                 String        @id @default(uuid())
   sellerId           String
-  seller             User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  seller             User          @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   title              String
   description        String
   metalType          MetalType
@@ -103,45 +105,45 @@ model Listing {
   status             ListingStatus @default(PENDING)
   rejectionReason    String?
   certificateUrl     String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
-  photos             ListingPhoto[]
-  conversations      Conversation[]
-  reviews            Review[]
-  reports            Report[]
+  photos        ListingPhoto[]
+  conversations Conversation[]
+  reviews       Review[]
+  reports       Report[]      @relation("ReportTargetListing")
 }
 
 model ListingPhoto {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
   url       String
 }
 
 model Conversation {
-  id         String   @id @default(uuid())
-  listingId  String
-  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  buyerId    String
-  buyer      User     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
-  sellerId   String
-  seller     User     @relation("ConversationSeller", fields: [sellerId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyerId   String
+  buyer     User     @relation("ConversationBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  sellerId  String
+  seller    User     @relation("ConversationSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
-  messages   ChatMessage[]
+  messages ChatMessage[]
 }
 
 model ChatMessage {
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   senderId       String
-  sender         User     @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  sender         User         @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   content        String
   attachmentUrl  String?
   attachmentType String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime     @default(now())
 }
 
 model Review {
@@ -160,16 +162,17 @@ model Review {
 }
 
 model Report {
-  id             String   @id @default(uuid())
+  id              String    @id @default(uuid())
   reporterId      String
-  reporter        User     @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  reporter        User      @relation(fields: [reporterId], references: [id], onDelete: Cascade)
   type            ReportType
   targetUserId    String?
   targetListingId String?
+  targetListing   Listing?  @relation("ReportTargetListing", fields: [targetListingId], references: [id], onDelete: SetNull)
   targetChatId    String?
   reason          String
-  resolved        Boolean  @default(false)
-  createdAt       DateTime @default(now())
+  resolved        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
 }
 
 model Notification {

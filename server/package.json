@@ -6,9 +6,10 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
-    "prisma:seed": "ts-node prisma/seed.ts",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:setup": "npm run prisma:generate && npm run prisma:migrate",
+    "prisma:seed": "npm run prisma:generate && ts-node prisma/seed.ts",
     "test": "vitest run"
   },
   "dependencies": {

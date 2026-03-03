@@ -35,7 +35,7 @@ cd C:\path\to\Goldly
 npm install
 copy server\.env.example server\.env
 npm run infra:up
-npm run prisma:migrate -w @goldly/server
+npm run prisma:setup -w @goldly/server
 npm run prisma:seed -w @goldly/server
 npm run dev -w @goldly/server
 ```
@@ -54,13 +54,27 @@ cd C:\path\to\Goldly
 npm run dev -w @goldly/admin
 ```
 
+
+### 0) If `copy server\.env.example server\.env` fails
+The file exists in current versions. If it is missing locally, update your branch first:
+
+```bat
+git pull
+```
+
+Then run:
+
+```bat
+copy server\.env.example server\.env
+```
+
 ## Quick Start (cross-platform)
 
 ```bash
 cp server/.env.example server/.env
 npm install
 npm run infra:up
-npm run prisma:migrate -w @goldly/server
+npm run prisma:setup -w @goldly/server
 npm run prisma:seed -w @goldly/server
 npm run dev -w @goldly/server
 npm run dev -w @goldly/web
@@ -105,10 +119,27 @@ npm run infra:up
 ```
 
 ### 3) Docker command not found
-Install Docker Desktop and ensure `docker` is in PATH.
+Install Docker Desktop and ensure `docker` is in PATH, then restart terminal and run `docker --version`.
 
 ### 4) Port already in use
 Stop local services using ports `5432`, `9000`, `9001` or edit `infra/docker-compose.yml`.
+
+
+### 5) Prisma relation validation (P1012)
+If you still see old schema validation errors, ensure your local repo is up-to-date and regenerate Prisma client:
+
+```bat
+git pull
+npm run prisma:generate -w @goldly/server
+```
+
+### 6) `@prisma/client did not initialize yet`
+Run generate before seed/migrate (already handled by scripts in latest repo):
+
+```bat
+npm run prisma:setup -w @goldly/server
+npm run prisma:seed -w @goldly/server
+```
 
 ## Security / Validation
 
