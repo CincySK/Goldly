@@ -56,6 +56,18 @@ npm run doctor -w @goldly/server
 
 If this command fails with missing scripts/relations, your branch is older than the latest fixes and Prisma will fail until you sync to the updated branch/PR.
 
+
+If you get `Missing script: doctor`, your local branch is older than the latest fixes.
+Run these checks:
+
+```bat
+type server\package.json
+dir server\scripts
+```
+
+Expected in `server/package.json` scripts: `setup:env`, `prisma:setup`, `doctor`.
+If missing, your local checkout does not include the updated commits yet.
+
 ```bat
 cd C:\path\to\Goldly
 npm install
