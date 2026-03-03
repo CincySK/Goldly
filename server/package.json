@@ -11,7 +11,8 @@
     "prisma:setup": "npm run setup:env && npm run prisma:generate && npm run prisma:migrate",
     "prisma:seed": "npm run setup:env && npm run prisma:generate && ts-node prisma/seed.ts",
     "test": "vitest run",
-    "setup:env": "node scripts/setup-env.js"
+    "setup:env": "node scripts/setup-env.js",
+    "doctor": "node scripts/doctor.js"
   },
   "dependencies": {
     "@goldly/shared": "0.1.0",

@@ -48,6 +48,14 @@ Your errors indicate commands were run from `C:\Users\deept` instead of the clon
 
 ### Correct sequence on Windows (PowerShell or CMD)
 
+### Branch sanity check (run this first)
+
+```bat
+npm run doctor -w @goldly/server
+```
+
+If this command fails with missing scripts/relations, your branch is older than the latest fixes and Prisma will fail until you sync to the updated branch/PR.
+
 ```bat
 cd C:\path\to\Goldly
 npm install
@@ -179,6 +187,17 @@ Run generate before seed/migrate (already handled by scripts in latest repo):
 npm run prisma:setup -w @goldly/server
 npm run prisma:seed -w @goldly/server
 ```
+
+
+### 7) `Missing script: setup:env` or `prisma:setup`
+Your branch is on an older commit. Verify with:
+
+```bat
+npm run --workspace=@goldly/server
+```
+
+Then sync to the latest branch/PR and rerun `npm run doctor -w @goldly/server`.
+
 
 ## Security / Validation
 
