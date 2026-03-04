@@ -147,6 +147,11 @@ npm run bootstrap
 
 This starts infra and applies/seeds DB.
 
+## Demo credentials
+
+- User: `user@goldly.local` / `User12345!`
+- Admin: `admin@goldly.local` / `Admin1234!`
+
 ## Testing
 
 ```bash
